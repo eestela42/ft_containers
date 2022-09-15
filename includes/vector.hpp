@@ -1,0 +1,90 @@
+#ifndef VECTOR_HPP
+# define VECTOR_HPP
+
+#include <iostream>
+#include <memory>
+
+#include <vector>
+namespace ft
+{
+
+template < typename T, typename A = std::allocator<T> >
+class vector
+{
+
+public:		/* Member types */
+
+	typedef			T	value_type;
+	typedef			A	allocator_type;
+	typedef			T&	reference;
+	typedef const 	T&	const_reference;
+	typedef			T*	pointer;
+	typedef const	T*	const_pointer;
+
+	/*
+	ITERATORS
+	*/
+
+	unsigned long int	size_type;
+
+private:
+	size_type	_container_size;
+	size_type	_container_capacity;
+	pointer		_start;
+	allocator_type	_allocator;
+
+
+
+public:		/* Member functions */
+
+
+			/* Constructors */
+
+	explicit vector (const allocator_type& alloc = allocator_type())
+		: _container_lenght(0), _container_size(0), _start(NULL), _allocator(alloc);
+	{
+		_start = _allocator.allocate(0);
+	};
+
+	explicit vector (size_type n, const value_type& val = value_type(),
+						const allocator_type& alloc = allocator_type())
+	: _container_lenght(n), _container_size(n), _start(NULL), _allocator(alloc)
+	{
+		_start = _allocator.allocate(n);
+		for (i = 0; i < n; i++)
+			_allocator.construct(_start + i, val);
+	}
+
+	// template <class InputIterator>
+	// 		vector (InputIterator first, InputIterator last,
+	// 			const allocator_type& alloc = allocator_type());
+
+	vector (const vector& x)
+	{
+		this = x;
+	}
+
+			/* Constructor */
+
+	~vector()
+	{
+		_allocator.destroy(_start);
+		_allocator.deallocate(_start, _container_capacity);
+	}
+
+			/* Capacity */
+
+	size_t	size()
+	{
+		return(this->size);
+	}
+
+	bool	empty()
+	{
+		return (!size);
+	}
+};
+
+}
+
+#endif
