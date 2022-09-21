@@ -40,6 +40,11 @@ public:		/* Member functions */
 
 			/* Constructors */
 
+	vector(): _container_lenght(0), _container_size(0), _start(NULL)
+	{
+		_start = _allocator.allocate(0);
+	};
+
 	explicit vector (const allocator_type& alloc = allocator_type())
 		: _container_lenght(0), _container_size(0), _start(NULL), _allocator(alloc);
 	{
@@ -71,6 +76,13 @@ public:		/* Member functions */
 		_allocator.destroy(_start);
 		_allocator.deallocate(_start, _container_capacity);
 	}
+
+			/* Operator */
+
+	vector& operator=( const vector& other )
+	{
+
+	};
 
 			/* Capacity */
 
