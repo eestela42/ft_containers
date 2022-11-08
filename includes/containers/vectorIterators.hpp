@@ -56,7 +56,8 @@ class VectorIterator
 	value_type *operator->()
 	{return(_ptr);};
 
-//*a = t ???????
+	const value_type &operator*() const
+	{return(*_ptr);};
 
 		/* incremente and decremante operators */
 
@@ -105,21 +106,24 @@ class VectorIterator
 	};
 
 //Supports the arithmetic operators + and - between an iterator and an integer value, or subtracting an iterator from another???????????
-	VectorIterator operator+(VectorIterator &rhs)
+	VectorIterator operator+(int i)
 	{
 		VectorIterator tmp(*this);
 
-		tmp._ptr += rhs._ptr;
+		tmp._ptr += i;
 		return (tmp);
 	};
 
-	VectorIterator operator-(VectorIterator &rhs)
+	VectorIterator operator-(int i)
 	{
 		VectorIterator tmp(*this);
 
-		tmp._ptr -= rhs._ptr;
+		tmp._ptr -= i;
 		return (tmp);
 	};
+
+	friend
+	difference_type 
 
 		/* inequality relational operators */
 

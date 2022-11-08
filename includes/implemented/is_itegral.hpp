@@ -66,7 +66,7 @@ struct is_integral<unsigned long long>
 {
 	static const bool value = true;
 };
-
+//il en manque 
 }
 
 #endif
