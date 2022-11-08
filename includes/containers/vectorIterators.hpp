@@ -174,7 +174,7 @@ class VectorIterator
 		/* offset dereference operator */
 
 	value_type operator[](int i)
-	{return(*(*this + i))}
+	{return(*(*this + i))};
 
 };
 

@@ -10,12 +10,16 @@ Fonctions membres 	:
         const Allocator& alloc = Allocator() );
 	//vector( const vector& other );
 
+	/* Member functions */
+
 	vector& operator=( const vector& other );
 	void assign( size_type count, const T& value );
 	template< class InputIt >
 	void assign( InputIt first, InputIt last );
 	allocator_type get_allocator() const;
 
+
+	/* Element access */
 	reference at( size_type pos );
 	const_reference at( size_type pos ) const;
 	reference operator[]( size_type pos );
@@ -27,6 +31,8 @@ Fonctions membres 	:
 	T* data();
 	const T* data() const;
 
+	/* Iterators */
+
 	iterator begin();
 	const_iterator begin() const;
 	iterator end();
@@ -36,12 +42,15 @@ Fonctions membres 	:
 	reverse_iterator rend();
 	const_reverse_iterator rend() const;
 
+	/* Capacity */
+
 	bool empty() const;
 	size_type size() const;
 	size_type max_size() const;
 	void reserve( size_type new_cap );
 	size_type capacity() const;
 
+	/* Modifiers */
 	void clear();
 	iterator insert( iterator pos, const T& value );
 	void insert( iterator pos, size_type count, const T& value );
@@ -55,7 +64,7 @@ Fonctions membres 	:
 	void swap( vector& other );
 
 
-fonctions non-membres	:
+	/* non-member functions */
 	template< class T, class Alloc >
 bool operator==( const std::vector<T,Alloc>& lhs,
                  const std::vector<T,Alloc>& rhs );

@@ -80,20 +80,38 @@ public:		/* Member functions */
 
 	vector& operator=( const vector& other )
 	{
-
+		
 	};
 
 			/* Capacity */
 
 	size_t	size()
 	{
-		return(this->size);
+		return(this->_container_size);
 	}
 
 	bool	empty()
 	{
-		return (!size);
+		return (!this->_container_size);
 	}
+
+	size_type max_size() const
+	{
+			retun(1024); //fixer une taille maximal
+	};
+
+	void reserve( size_type new_cap )
+	{
+		if (new_cap > this->_container_capacity)
+			;//realloc
+	};
+
+	size_type capacity() const
+	{
+		return (this->_contaienr_capacity);
+	};
+
+
 };
 
 }
