@@ -25,7 +25,7 @@ public:		/* Member types */
 	ITERATORS
 	*/
 
-	unsigned long int	size_type;
+	typedef unsigned long int	size_type;
 
 private:
 	size_type	_container_size;
@@ -98,7 +98,7 @@ public:		/* Member functions */
 
 	size_type max_size() const
 	{
-			retun(1024); //fixer une taille maximal
+			retun(1024); //max size allocator
 	};
 
 	void reserve( size_type new_cap )

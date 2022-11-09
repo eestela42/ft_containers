@@ -50,13 +50,12 @@ class VectorIterator
 
 		/* dereferance operators */
 	
-	value_type &operator*()
+	value_type&	operator*()
 	{return(*_ptr);};
 
-	value_type *operator->()
+	value_type* operator->()
 	{return(_ptr);};
 
-//*a = t ???????
 
 		/* incremente and decremante operators */
 
