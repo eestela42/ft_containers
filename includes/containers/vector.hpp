@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <memory>
+#include "iterators/random_access_iterator.hpp"
+#include "iterators/reverse_iterator.hpp"
+
 
 namespace ft
 {
@@ -13,18 +16,23 @@ class vector
 
 public:		/* Member types */
 
-	typedef			T	value_type;
-	typedef			A	allocator_type;
-	typedef			T&	reference;
-	typedef const 	T&	const_reference;
-	typedef			T*	pointer;
-	typedef const	T*	const_pointer;
+	typedef				T									value_type;
+	typedef				A									allocator_type;
+	typedef	typename	allocator_type::reference			reference;
+	typedef	typename	allocator_type::const_reference		const_reference;
+	typedef	typename	allocator_type::pointer				pointer;
+	typedef	typename	allocator_type::const_pointer		const_pointer;
+
+	typedef 			random_access_iterator<false, T>			iterator;
+	typedef				random_access_iterator<true, T>		const_iterator;
+
+	typedef typename iterator_traits<iterator>::difference_type	difference_type;
 
 	/*
 	ITERATORS
 	*/
 
-	typedef unsigned long int	size_type;
+	typedef long int	size_type;
 
 private:
 	size_type	_container_size;
@@ -39,29 +47,32 @@ public:		/* Member functions */
 
 			/* Constructors */
 
-	vector(): _container_lenght(0), _container_size(0), _start(NULL)
+	vector(): _container_size(0), _container_size(0), _start(NULL)
 	{
 		_start = _allocator.allocate(0);
 	};
 
 	explicit vector (const allocator_type& alloc = allocator_type())
-		: _container_lenght(0), _container_size(0), _start(NULL), _allocator(alloc);
+		: _container_size(0), _container_size(0), _start(NULL), _allocator(alloc)
 	{
 		_start = _allocator.allocate(0);
 	};
 
 	explicit vector (size_type n, const value_type& val = value_type(),
 						const allocator_type& alloc = allocator_type())
-	: _container_lenght(n), _container_size(n), _start(NULL), _allocator(alloc)
+	: _container_size(n), _container_size(n), _start(NULL), _allocator(alloc)
 	{
-		_start = _allocator.allocate(n);
-		for (i = 0; i < n; i++)
+		this->_start = _allocator.allocate(n);
+		for (int i = 0; i < n; i++)
 			_allocator.construct(_start + i, val);
 	}
 
-	// template <class InputIterator>
-	// 		vector (InputIterator first, InputIterator last,
-	// 			const allocator_type& alloc = allocator_type());
+	template <class InputIterator>
+		vector (InputIterator first, InputIterator last,
+			const allocator_type& alloc = allocator_type())
+	{
+		while ()
+	}
 
 	vector (const vector& x)
 	{
@@ -72,7 +83,7 @@ public:		/* Member functions */
 
 	~vector()
 	{
-		_allocator.destroy(_start);
+		_allocator.destroy(this->_start);
 		_allocator.deallocate(_start, _container_capacity);
 	}
 
@@ -97,7 +108,7 @@ public:		/* Member functions */
 
 	size_type max_size() const
 	{
-			retun(1024); //max size allocator
+			return(1024); //max size allocator
 	};
 
 	void reserve( size_type new_cap )
