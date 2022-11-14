@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include "../../utils.hpp"
 #include "iterators/random_access_iterator.hpp"
 #include "iterators/reverse_iterator.hpp"
 
@@ -42,7 +43,7 @@ private:
 	pointer		_start;
 	allocator_type	_allocator;
 
-	void	delete_from(size_t first = 0)
+	void	delete_from(size_t first)
 	{
 		for (int i = first; i < this->_container_size; i++)
 			this->_allocator.destror(&_start[i]);
@@ -222,17 +223,65 @@ public:		/* Member functions */
 
 			/* Modifiers */
 
-	void clear();
-	iterator insert( iterator pos, const T& value );
+	void clear()	{	delete_from(0);	};
+
+	iterator insert( iterator pos, const T& value )
+	{
+		difference_type i = ft::distance(this->begin(), pos);
+		position = this->begin() + i;
+		reverse_iterator it = this->end();
+		while (it != position)
+		{
+			this->_allocator.construct(&(*it), *(it + 1));
+			this->_allocator.destroy(&(*it + 1));
+			it++;
+		}
+		this->_allocator.construct(&(*it), val);
+		this->_container_size++;
+		return (it.base());
+	}
+
 	void insert( iterator pos, size_type count, const T& value );
+
 	template< class InputIt >
 	void insert( iterator pos, InputIt first, InputIt last );
+
 	iterator erase( iterator pos );
+
 	iterator erase( iterator first, iterator last );
-	void push_back( const T& value );
-	void pop_back();
-	void resize( size_type count, T value = T() );
-	void swap( vector& other );
+
+	void push_back( const T& value )
+	{
+		reserve(this->_container_size + 1);
+		this->_allocator.construct(&this->_start[this->_container_size], value);
+		this->_container_size++;
+	};
+
+	void pop_back()
+	{
+		this->_allocator.destroy(&this->_start[this->_container_size - 1]);
+		this->_container_size--;
+	};
+
+	void resize( size_type count, T value = T() )
+	{
+		if (this->_container_size < count)
+		{
+			delete_from(count);
+		}
+		reserve(n);
+		for(int i = this->_container_size; i < n; i++)
+			this->_allocator.construct(&this->_start[i], T);
+		this->_container_size = n;
+	}
+
+	void swap( vector& other )
+	{
+		ft::swap(this->_start, other._start);
+		ft::swap(this->_container_capacity, other._container_capacity);
+		ft::swap(this->_container_size, other._container_size);
+		ft::swap(this->_allocator, other._allocator);
+	}
 
 };
 
