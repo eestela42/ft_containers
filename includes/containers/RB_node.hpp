@@ -84,8 +84,33 @@ RB_node	*root()
 	return (this->parent->root())
 }
 
+RB_node	*successor()
+{
+	if (this == leaf)
+		return ((*root_ptr)->leftest_node());
+	if (this->rightChild != leaf)
+		return (this->rightChild->leftest_node());
+	RB_node	*tmp = this;
+	while (tmp->parent && tmp == tmp->parent->rightChild)
+		tmp = tmp->parent;
+	if (!tmp->parent)
+		return (tmp->leaf);
+	return (tmp->parent);
+}
 
-
+RB_node	*predecessor()
+{
+	if (this == leaf)
+		return ((*root_ptr)->rightest_node());
+	if (this->leftChild != leaf)
+		return (this->leftChild->rightest_node());
+	RB_node	*tmp = this;
+	while (tmp->parent && tmp == tmp->parent->leftChild)
+		tmp = tmp->parent;
+	if (!tmp->parent)
+		return (tmp->leaf);
+	return (tmp->parent);
+}
 
 
 

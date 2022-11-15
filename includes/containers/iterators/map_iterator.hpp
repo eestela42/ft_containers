@@ -2,9 +2,9 @@
 # define MAP_ITERATOR_HPP
 
 
-#include "iterator_trait.hpp"
+#include "iterator_traits.hpp"
 #include "../RB_node.hpp"
-# include "../../utlis.hpp"
+# include "../../utils.hpp"
 
 namespace ft
 {
@@ -34,28 +34,30 @@ map_iterator &operator=(const map_iterator *rhs)
 {
 	this->_node = rhs._node;
 	return (*this);
+};
+
+map_iterator	&operator++()
+{
+	this->_node = this->_node->successor();
 }
 
-//operators ++ and --
-
 reference	operator*() const
-{	return *this->_node->value;	}
+{	return *this->_node->value;	};
 
 pointer		operator->() const
-{	return this->_node->value;	}
+{	return this->_node->value;	};
 
 
 friend
 bool	operator==(const map_iterator &lhs, const map_iterator &rhs)
-{	return (lhs._node == rhs._node);	}
+{	return (lhs._node == rhs._node);	};
 
 friend
 bool	operator!=(const map_iterator &lhs, const map_iterator &rhs)
-{	return (lhs._node != rhs._node);	}
+{	return (lhs._node != rhs._node);	};
 
-node_type	*node()	const	{
-	return this->_node;
-}
+node_type	*node()	const
+{	return this->_node;	};
 
 };
 
