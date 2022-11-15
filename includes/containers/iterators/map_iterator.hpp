@@ -39,6 +39,27 @@ map_iterator &operator=(const map_iterator *rhs)
 map_iterator	&operator++()
 {
 	this->_node = this->_node->successor();
+	return (*this);
+}
+
+map_iterator	&operator++(int)
+{
+	map_iterator	it(this);
+	++(*this);
+	return (it);
+}
+
+map_iterator	&operator--()
+{
+	this->_node = this->_node->predecessor();
+	return (*this);
+}
+
+map_iterator	&operator--(int)
+{
+	map_iterator	it(this);
+	--(*this);
+	return (it);
 }
 
 reference	operator*() const
