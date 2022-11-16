@@ -59,21 +59,21 @@ RB_node *uncle()
 	return (gp->sibling());
 }
 
-RB_node	*rightest_node()
+RB_node	*maximum()
 {
 	if (this == leaf)
 		return (this);
 	if (this->rightChild != leaf)
-		return (this->rightChild->max_node);
+		return (this->rightChild->maximum());
 	return (this);
 }
 
-RB_node	*leftest_node()
+RB_node	*minimum()
 {
 	if (this == leaf)
 		return (this);
 	if (this->leftChild != leaf)
-		return (this->leftChild->max_node);
+		return (this->leftChild->minimum());
 	return (this);
 }
 
@@ -87,9 +87,9 @@ RB_node	*root()
 RB_node	*successor()
 {
 	if (this == leaf)
-		return ((*root_ptr)->leftest_node());
+		return ((*root_ptr)->minimum());
 	if (this->rightChild != leaf)
-		return (this->rightChild->leftest_node());
+		return (this->rightChild->minimum());
 	RB_node	*tmp = this;
 	while (tmp->parent && tmp == tmp->parent->rightChild)
 		tmp = tmp->parent;
@@ -101,9 +101,9 @@ RB_node	*successor()
 RB_node	*predecessor()
 {
 	if (this == leaf)
-		return ((*root_ptr)->rightest_node());
+		return ((*root_ptr)->maximum());
 	if (this->leftChild != leaf)
-		return (this->leftChild->rightest_node());
+		return (this->leftChild->maximum());
 	RB_node	*tmp = this;
 	while (tmp->parent && tmp == tmp->parent->leftChild)
 		tmp = tmp->parent;

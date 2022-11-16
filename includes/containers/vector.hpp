@@ -24,7 +24,7 @@ public:		/* Member types */
 	typedef	typename	allocator_type::pointer					pointer;
 	typedef	typename	allocator_type::const_pointer			const_pointer;
 
-	typedef 			ft::random_access_iterator<0, T>	iterator;
+	typedef 			ft::random_access_iterator<0, T>		iterator;
 	typedef				ft::random_access_iterator<1, T>		const_iterator;
 	typedef 			ft::reverse_iterator<iterator>			reverse_iterator;
 	typedef 			ft::reverse_iterator<const_iterator>	const_reverse_iterator;
