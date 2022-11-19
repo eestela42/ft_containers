@@ -5,6 +5,7 @@
 # include "utils.hpp"
 #include "RB_node.hpp"
 #include <memory>
+#include <iostream>
 
 namespace ft
 {
@@ -14,15 +15,18 @@ namespace ft
 template<typename T>
 struct RB_node;
 
-template <typename T>
+template <
+typename T
+>
 struct RB_tree
 {
 	public:
 		typedef T						value_type;
 		typedef RB_node<value_type>		node_type;
 
-		node_type	*root;
-		node_type	*leaf;
+
+		node_type						*root;
+		node_type						*leaf;
 
 	RB_tree()
 	{
@@ -40,36 +44,17 @@ struct RB_tree
 	node_type	*maximum()	const	{	return (root->maximum());	};
 	node_type	*minimum()		const	{	return (root->minimum());	};
 
-	void	insert(value_type	va)
+	void	insert(node_type *parent, node_type *&side_ref, node_type *n)
 	{
-		node_type	*node = new node_type(va, *this);
-		node_type	*y = NULL;
-		node_type	*x = this->root;
+		side_ref = n;
 
-		while (x != leaf)
-		{
-			y = x;
-			if (node->value < x->value)
-				x = x->leftChild;
-			else
-				x = x->rightChild;
-		}
+		n->parent = parent;
+		n->leftChild = leaf; // NIL
+		n->rightChild = leaf; // NIL
+		n->color = RED;
+		insertFix(n);
 
-		node->_parent = y;
-		if (y == NULL)
-			this->root = node;
-		else if (node->value < y->value)
-			y->leftChild = node;
-		else
-			y->rightChild = node;
-		if (node->parent == NULL)
-		{
-			node->color = BLACK;
-			return ;
-		}
-		if (node->parent->parent == NULL)
-			return ;
-		insertFix(node);
+		root = n->root();
 	};
 
 	void	delete_node(node_type *z)
@@ -126,8 +111,22 @@ struct RB_tree
 		v->parent = u->parent;
 	};
 
+	void transplant(node_type *u, node_type *v) {
+		if (u->parent == NULL) {
+			root = v;
+		}
+		else if (u == u->parent->leftChild) {
+			u->parent->leftChild = v;
+		}
+		else {
+			u->parent->rightChild = v;
+		}
+		v->parent = u->parent;
+	}
+
 	void	leftRotate(node_type *x)
 	{
+		/*
 			node_type	*y = x->rightChild;
 			x->rightChild = y->leftChild;
 			if (y->leftChild != leaf)
@@ -141,13 +140,26 @@ struct RB_tree
 				x->parent->rightChild = y;
 			y->leftChild = x;
 			x->parent = y;
+			*/
+		node_type* y = x->rightChild;
+		//le fils rightChild de x devient le fils leftChild de y
+		x->rightChild = y->leftChild;
+		if (y->leftChild != leaf)
+			y->leftChild->parent = x;
+
+		transplant(x, y);
+
+		//On attache x à leftChild de y
+		y->leftChild = x;
+		x->parent = y;
 	};
 
 	void	rightRotate(node_type *x)
 	{
+		/*
 		node_type	*y = x->leftChild;
 		x->leftChild = y->rightChild;
-		if (y->right != leaf)
+		if (y->rightChild != leaf)
 			y->rightChild->parent = x;
 		y ->parent = x->parent;
 		if (x->parent == NULL)
@@ -158,13 +170,25 @@ struct RB_tree
 			x->parent->leftChild = y;
 		y->rightChild = x;
 		x->parent = y;
+		*/
+		node_type* y = x->leftChild;
+
+		x->leftChild = y->rightChild;
+		if (y->rightChild != leaf)
+			y->rightChild->parent = x;
+
+		transplant(x, y);
+
+		y->rightChild = x;
+		x->parent = y;
 
 	};
 
 
 
-	void	insertFix(node_type *k)
+	void	insertFix(node_type *x)
 	{
+		/*
 		node_type *u;
 		while (k->parent->color == RED)
 		{
@@ -201,7 +225,7 @@ struct RB_tree
 				}
 				else
 				{
-					if (k == k->_parent->rightChild)
+					if (k == k->parent->rightChild)
 					{
 						k = k->parent;
 						leftRotate(k);
@@ -215,16 +239,54 @@ struct RB_tree
 			}
 		}
 		this->root->color = BLACK;
+		*/
+		
+		if (x->parent == NULL) // n est a la racine
+			x->color = BLACK;
+		else if (x->parent->color == BLACK) // on laisse n rouge et c'est bon
+			return ;
+		else if (x->uncle() != leaf && x->uncle()->color == RED)	{
+			x->parent->color = BLACK;
+			x->uncle()->color = BLACK;
+			
+			node_type *g = x->grandparent();
+			g->color = RED;
+			insertFix(g);
+		}
+		else	{
+			node_type *g = x->grandparent();
+
+			if (g->leftChild != leaf && x == g->leftChild->rightChild) {
+				leftRotate(x->parent);
+				x = x->leftChild;
+			}
+			else if (g->rightChild != leaf && x == g->rightChild->leftChild) {
+				rightRotate(x->parent);
+				x = x->rightChild; 
+			}
+
+			node_type *p = x->parent;
+			node_type *gr = x->grandparent();
+
+			if (x == p->leftChild)
+				rightRotate(gr);
+			else
+				leftRotate(gr);
+			
+			p->color = BLACK;
+			gr->color = RED;
+		}
 	};
 
 	void	deleteFix(node_type *x)
 	{
+		/*
 		node_type	*s;
 		while (x != this->root && x->color == BLACK)
 		{
 			if (x == x->parent->leftChild)
 			{
-				s = x->parent->right;
+				s = x->parent->rightChild;
 				if (s->color == RED)
 				{
 					s->color = BLACK;
@@ -244,7 +306,7 @@ struct RB_tree
 						s->leftChild->color = BLACK;
 						s->color = RED;
 						rightRotate(s);
-						s = x->parent->right;
+						s = x->parent->rightChild;
 					}
 					s->color = x->parent->color;
 					x->parent->color = BLACK;
@@ -282,6 +344,70 @@ struct RB_tree
 					s->leftChild->color = BLACK;
 					rightRotate(x->parent);
 					x = this->root;
+				}
+			}
+		}
+		x->color = BLACK;
+		*/
+		node_type *s;
+		while (x != root && x->color == BLACK) {
+			// std::cerr << 
+			if (x == x->parent->leftChild) {
+				s = x->parent->rightChild;
+				if (s->color == RED) {
+					s->color = BLACK;
+					x->parent->color = RED;
+					leftRotate(x->parent);
+					s = x->parent->rightChild;
+				}
+				if (s == leaf)
+					return;
+				
+				if (s->leftChild->color == BLACK && s->rightChild->color == BLACK) {
+					s->color = RED;
+					x = x->parent;
+				} else {
+					if (s->rightChild->color == BLACK) {
+						s->leftChild->color = BLACK;
+						s->color = RED;
+						rightRotate(s);
+						s = x->parent->rightChild;
+					}
+
+					s->color = x->parent->color;
+					x->parent->color = BLACK;
+					s->rightChild->color = BLACK;
+					leftRotate(x->parent);
+					x = root;
+				}
+			
+			} else {
+				s = x->parent->leftChild;
+				if (s->color == RED) {
+					s->color = BLACK;
+					x->parent->color = RED;
+					rightRotate(x->parent);
+					s = x->parent->leftChild;
+				}
+				if (s == leaf)
+					return;
+
+				if (s->rightChild->color == BLACK && s->rightChild->color == BLACK) {
+					s->color = RED;
+					x = x->parent;
+				} else {
+					if (s->leftChild->color == BLACK) {
+						s->rightChild->color = BLACK;
+						s->color = RED;
+						leftRotate(s);
+						s = x->parent->leftChild;
+					}
+
+					s->color = x->parent->color;
+					x->parent->color = BLACK;
+					s->leftChild->color = BLACK;
+					rightRotate(x->parent);
+					x = root;
 				}
 			}
 		}

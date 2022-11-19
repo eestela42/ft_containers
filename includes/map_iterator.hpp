@@ -28,7 +28,9 @@ public:
 	map_iterator() : _node(NULL)	{};
 	map_iterator(void *node) : _node(static_cast<node_type*>(node))	{};
 	map_iterator(const map_iterator &rhs) : _node(rhs._node)	{};
-	~map_iterator();
+	~map_iterator() {};
+
+	operator map_iterator<true, T> () const {return (map_iterator<true, T>(this->_node)); };
 
 map_iterator &operator=(const map_iterator *rhs)
 {
@@ -42,9 +44,9 @@ map_iterator	&operator++()
 	return (*this);
 }
 
-map_iterator	&operator++(int)
+map_iterator	operator++(int)
 {
-	map_iterator	it(this);
+	map_iterator	it(*this);
 	++(*this);
 	return (it);
 }
@@ -52,12 +54,13 @@ map_iterator	&operator++(int)
 map_iterator	&operator--()
 {
 	this->_node = this->_node->predecessor();
+
 	return (*this);
 }
 
-map_iterator	&operator--(int)
+map_iterator	operator--(int)
 {
-	map_iterator	it(this);
+	map_iterator	it(*this);
 	--(*this);
 	return (it);
 }

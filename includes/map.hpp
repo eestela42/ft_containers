@@ -8,6 +8,10 @@
 # include "RB_tree.hpp"
 # include "pair.hpp"
 # include "utils.hpp"
+# include "enable_if.hpp"
+# include <limits>
+# include <iostream>
+# include <memory>
 
 namespace ft
 {
@@ -41,8 +45,8 @@ class map
 	typedef	typename	allocator_type::const_pointer			const_pointer;
 
 
-	typedef 			ft::map_iterator<0, T>					iterator;
-	typedef				ft::map_iterator<1, T>					const_iterator;
+	typedef 			ft::map_iterator<0, value_type>			iterator;
+	typedef				ft::map_iterator<1, value_type>			const_iterator;
 	typedef 			ft::reverse_iterator<iterator>			reverse_iterator;
 	typedef 			ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 	typedef typename iterator_traits<iterator>::difference_type	difference_type;
@@ -79,20 +83,20 @@ class map
 	public:
 
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	: _size(0), _allocator(alloc), comp(comp), tree(new tree_type())
+	: tree(new tree_type()), _allocator(alloc), _size(0) , comp(comp)
 	{};
 			  
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last,
 		const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type())
-	:_size(0), _allocator(alloc), comp(comp), tree(new tree_type())
+	: tree(new tree_type()), _allocator(alloc), _size(0) , comp(comp)
 	{
 		insert(first, last);
 	};
 		
 	map(const map& x)	
-	:_size(0), tree(new tree_type()), _allocator(x.A), comp(x.comp)
+	: tree(new tree_type()), _allocator(x._allocator), _size(0) , comp(x.comp)
 	{
 		insert(x.begin(), x.end());
 	};
@@ -122,10 +126,10 @@ mapped_type& operator[] (const key_type& k)	{
 	}
 
 	iterator begin()	{
-		return iterator(this->tree->min_node());
+		return iterator(this->tree->minimum());
 	};
 	const_iterator begin() const	{
-		return const_iterator(this->tree->min_node());
+		return const_iterator(this->tree->minimum());
 	};
 	iterator end()	{
 		return iterator(this->tree->leaf);
@@ -140,10 +144,10 @@ mapped_type& operator[] (const key_type& k)	{
 		return const_reverse_iterator(this->tree->leaf);
 	};
 	reverse_iterator rend()	{
-		return reverse_iterator(this->tree->min_node());
+		return reverse_iterator(this->tree->minimum());
 	};
 	const_reverse_iterator rend() const	{
-		return const_reverse_iterator(this->tree->min_node());
+		return const_reverse_iterator(this->tree->minimum());
 	};
 
 
@@ -204,18 +208,38 @@ mapped_type& operator[] (const key_type& k)	{
 
 	ft::pair<iterator, bool>	insert(const value_type& val)
 	{
-		ft::pair<iterator, bool> ret;
-		ret.first = iterator(this->tree->insert(val));
-		ret.second = ret.first != end();
-		return (ret);
+		node_type **dst = &tree->root;
+		node_type *parent = NULL;
+
+		while (*dst != tree->leaf)	{
+			
+			parent = *dst;
+			if (comp(val.first, (*dst)->value->first))
+				dst = &(*dst)->leftChild;
+			else if (comp((*dst)->value->first, val.first))
+				dst = &(*dst)->rightChild;
+			else
+				return ft::make_pair(iterator(*dst), false);
+		}
+
+		value_type *new_val = _allocator.allocate(1);
+		_allocator.construct(new_val, val);
+		node_type *new_node = _node_allocator.allocate(1);
+		_node_allocator.construct(new_node, node_type(new_val, *tree));
+
+		tree->insert(parent, *dst, new_node);
+
+		_size++;
+		return ft::make_pair(iterator(new_node), true);
 	};
 
 	iterator insert (iterator position, const value_type& val)	{
 		(void) position;
 		return insert(val).first;
 	}
+	
 	template <class InputIterator>
-	void insert (InputIterator first, InputIterator last)	{
+	void insert (typename ft::enable_if<!std::numeric_limits<InputIterator>::is_integer, InputIterator>::type first, InputIterator last)	{
 		for (; first != last; first++)
 			insert(*first);
 	}
@@ -390,6 +414,10 @@ mapped_type& operator[] (const key_type& k)	{
 
 };
 
+template <class Key, class T>
+void swap (map<Key, T>& x, map<Key, T> &y)	{
+	x.swap(y);
+}
 
 
 }

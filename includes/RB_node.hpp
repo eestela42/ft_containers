@@ -26,7 +26,7 @@ struct RB_node
 
 
 RB_node(value_type *val, RB_tree<value_type> &tree) :
-	value(val), leftChild(tree.leaf), rightChild(tree.leaf), parent(NULL), leaf(tree.leaf)
+	value(val), parent(NULL), leftChild(tree.leaf), rightChild(tree.leaf), root_ptr(&tree.root), leaf(tree.leaf)
 {};
 
 ~RB_node() {};
@@ -42,9 +42,9 @@ RB_node	*sibling()
 {
 	if (!this->parent)
 		return (NULL);
-	if (this == this->parent->rightChild)
-		return (this->parent->leftChild);
-	return (this->parent->rightChild);
+	if (this == this->parent->leftChild)
+		return (this->parent->rightChild);
+	return (this->parent->leftChild);
 };
 
 RB_node *uncle()
@@ -53,7 +53,7 @@ RB_node *uncle()
 
 	if (!gp)
 		return (NULL);
-	return (gp->sibling());
+	return (this->parent->sibling());
 };
 
 RB_node	*maximum()

@@ -47,7 +47,7 @@ private:
 
 	void	delete_from(size_t first)
 	{
-		for (int i = first; i < this->_container_size; i++)
+		for (size_type i = first; i < this->_container_size; i++)
 			this->_allocator.destroy(&_start[i]);
 		this->_container_size = first;
 	}
@@ -59,7 +59,7 @@ public:		/* Member functions */
 	explicit vector (const allocator_type& alloc = allocator_type())
 		: _container_size(0), _container_capacity(0), _start(NULL), _allocator(alloc)
 	{
-		_start = _allocator.allocate(0);
+		//_start = _allocator.allocate(0);
 	};
 
 	explicit vector (size_type n, const value_type& val = value_type(),
@@ -79,7 +79,7 @@ public:		/* Member functions */
 		this->_allocator = alloc;
 		this->_container_capacity = 0;
 		this->_container_size = 0;
-		this->_start = _allocator.allocate(0);
+		this->_start = NULL;
 		assign(first, last);
 	}
 
@@ -87,8 +87,9 @@ public:		/* Member functions */
 
 	~vector()
 	{
-		_allocator.destroy(this->_start);
-		_allocator.deallocate(_start, _container_capacity);
+		for (size_type i = 0; i < this->_container_size; i++)
+			this->_allocator.destroy(&_start[i]);
+		_allocator.deallocate(this->_start, _container_capacity);
 	}
 
 
@@ -251,20 +252,20 @@ public:		/* Member functions */
 
 	void clear()	{	delete_from(0);	};
 
-	iterator insert( iterator pos, const T& value )
+	iterator insert( iterator position, const T& value )
 	{
-		difference_type		i = ft::distance(this->begin(), pos);
-		pos = this->begin() + i;
-		reverse_iterator	it = this->end();
-		while (it != pos)
+		difference_type i = ft::distance(begin(), position);
+		reserve(_container_size + 1);
+		position = begin() + i;
+		iterator it = end();
+		for (; it != position; it--)
 		{
-			this->_allocator.construct(&(*it), *(it + 1));
-			this->_allocator.destroy(&(*it + 1));
-			it++;
+			_allocator.construct(&(*it), *(it - 1));
+			_allocator.destroy(&(*(it - 1)));
 		}
-		this->_allocator.construct(&(*it), value);
-		this->_container_size++;
-		return (it.base());
+		_allocator.construct(&(*it), value);
+		_container_size++;
+		return position;
 	}
 
 	void insert( iterator pos, size_type count, const T& value )
@@ -287,7 +288,7 @@ public:		/* Member functions */
 	}
 
 	template< class InputIt >
-	void insert( iterator pos, typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type first, InputIt last )
+	void insert( iterator pos, InputIt first, InputIt last, typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type* = NULL )
 	{
 		typename iterator_traits<InputIt>::difference_type n = ft::distance(first, last);
 		difference_type i = distance(begin(), pos);
@@ -303,9 +304,35 @@ public:		/* Member functions */
 		_container_size += n;
 	};
 
-	iterator erase( iterator pos );
+	iterator erase( iterator pos )
+	{
+		iterator ret = pos;
+		this->_allocator.destroy(&(*pos));
+		iterator end = this->end() - 1;
+		for (; pos != end; pos++)	{
+			this->_allocator.construct(&(*pos), *(pos + 1));
+			this->_allocator.destroy(&(*(pos + 1)));
+		}
+		_container_size--;
+		return ret;
+	};
 
-	iterator erase( iterator first, iterator last );
+	iterator erase( iterator first, iterator last )
+	{
+		iterator ret = first;
+		iterator tmp = first;
+		difference_type i = distance(first, last);
+
+		for (; tmp != last; tmp++)
+			this->_allocator.destroy(&(*tmp));
+		for (; tmp != end(); tmp++)	{
+			this->_allocator.construct(&(*first), *tmp);
+			this->_allocator.destroy(&(*tmp));
+			first++;
+		}
+		_container_size -= i;
+		return ret;
+	};
 
 	void push_back( const T& value )
 	{
@@ -322,12 +349,13 @@ public:		/* Member functions */
 
 	void resize( size_type count, T value = T() )
 	{
-		if (this->_container_size < count)
+		if (this->_container_size >= count)
 		{
 			delete_from(count);
+			return ;
 		}
 		reserve(count);
-		for(int i = this->_container_size; i < count; i++)
+		for(size_type i = this->_container_size; i < count; i++)
 			this->_allocator.construct(&this->_start[i], value);
 		this->_container_size = count;
 	}
@@ -340,7 +368,55 @@ public:		/* Member functions */
 		ft::swap(this->_allocator, other._allocator);
 	}
 
+	friend
+	bool operator== (const vector& lhs, const vector& rhs)	{
+		if (lhs._container_size != rhs._container_size)
+			return false;
+		for (size_type i = 0; i < rhs._container_size; i++)
+			if (lhs._start[i] != rhs._start[i])
+				return false;
+		return true;
+	}
+
+	friend
+	bool operator!= (const vector& lhs, const vector& rhs)	{
+		return !(lhs == rhs);
+	}
+	
+	friend
+	bool operator<  (const vector& lhs, const vector& rhs)	{
+		for (size_type i = 0; i < rhs._container_size; i++)
+		{
+			if (i == lhs._container_size)
+				return true;
+			if (lhs._start[i] != rhs._start[i])
+				return lhs._start[i] < rhs._start[i];
+		}
+		return false;
+	}
+
+	friend
+	bool operator<= (const vector& lhs, const vector& rhs)	{
+		return !(rhs < lhs);
+	}
+
+	friend
+	bool operator>  (const vector& lhs, const vector& rhs)	{
+		return rhs < lhs;
+	}
+
+	friend
+	bool operator>= (const vector& lhs, const vector& rhs)	{
+		return !(lhs < rhs);
+	}
+	
 };
+	template<class T>
+	void swap (vector<T>& x, vector<T>& y)	{
+	x.swap(y);
+	}
+
+
 
 }
 

@@ -3,18 +3,19 @@
 
 #include <iostream>
 #include <memory>
+#include "vector.hpp"
 
 namespace ft
 {
 
-template < typename T, typename Container = deque<T> >
+template < typename T, typename Container = ft::vector<T> >
 class stack
 {
 	public :
 
-	typedef	value_type		T;
-	typedef	container_type	Container;
-	typedef	size_type		Container::size_type;
+	typedef T								value_type;
+	typedef Container						container_type;
+	typedef	typename Container::size_type	size_type;
 
 	protected :
 	
@@ -22,7 +23,7 @@ class stack
 
 	public :
 
-	explicit stack( const Container& cont = Container() ) : container(cont);
+	explicit stack( const Container& cont = Container() ) : container(cont)
 	{};
 
 	~stack()
@@ -31,7 +32,7 @@ class stack
 
 	stack	&operator=(const stack &rhs)
 	{
-		*this.container = rhs.container;
+		this->container = rhs.container;
 		return (*this);
 	};
 
@@ -52,6 +53,31 @@ class stack
 
 	void pop()
 	{	container.pop_back();	};
+
+	friend
+	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container == rhs.container;
+	}
+	friend
+	bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container != rhs.container;
+	}
+	friend
+	bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container < rhs.container;
+	}
+	friend
+	bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container <= rhs.container;
+	}
+	friend
+	bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container > rhs.container;
+	}
+	friend
+	bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+		return lhs.container >= rhs.container;
+	}
 
 //emplace and swapp c++11 a test
 

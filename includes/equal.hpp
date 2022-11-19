@@ -1,5 +1,8 @@
 #ifndef EQUAL_HPP
 # define EQUAL_HPP
+
+# include "iterator_traits.hpp"
+
 namespace ft
 {
 	
@@ -16,7 +19,7 @@ bool equal( InputIt1 first1, InputIt1 last1,
 	}
 	return (true);
 };
-
+/*
 template< class InputIt1,
           class InputIt2,
           class BinaryPredicate >
@@ -34,7 +37,7 @@ bool equal( InputIt1 first1,
 	}
 	return (true);
 };
-
+*/
 }
 
 #endif

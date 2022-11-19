@@ -58,14 +58,12 @@ class random_access_iterator
 
 		/* dereferance operators */
 	
-	value_type&	operator*()
+	reference	operator*() const
 	{return(*_ptr);};
 
-	value_type* operator->()
+	pointer operator->() const
 	{return(_ptr);};
 
-	const value_type &operator*() const
-	{return(*_ptr);};
 
 		/* incremente and decremante operators */
 
@@ -134,7 +132,7 @@ class random_access_iterator
 	//difference_type 
 
 		/* inequality relational operators */
-
+	
 	bool	operator<(random_access_iterator &rsh)
 	{return (this->_ptr < rsh._ptr);};
 
@@ -149,22 +147,22 @@ class random_access_iterator
 
 		/* compound assignment operators */
 
-	random_access_iterator operator+=(int n)
+	random_access_iterator &operator+=(int n)
 	{
 		this->_ptr += n;
 		return (*this);
 	};
 
-	random_access_iterator operator-=(int n)
+	random_access_iterator &operator-=(int n)
 	{
-		this->_ptr += n;
+		this->_ptr -= n;
 		return (*this);
 	};
 
 		/* offset dereference operator */
 
-	value_type operator[](int i)
-	{return(*(*this + i));};
+	value_type &operator[](int i) const
+	{return(_ptr[i]);};
 
 
 	friend
