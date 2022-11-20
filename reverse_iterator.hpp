@@ -1,7 +1,7 @@
 #ifndef REVERSE_ITERATOR_HPP
 # define REVERSE_ITERATOR_HPP
 
-# include <iostream>
+//# include <iostream>
 # include <memory>
 # include "iterator_traits.hpp"
 namespace ft
@@ -11,7 +11,7 @@ template <class Iterator>
 class reverse_iterator
 {
 	public :
-	typedef Iterator										iterator_type;
+	typedef Iterator												iterator_type;
 	typedef typename iterator_traits<Iterator>::iterator_category	iterator_category;
 	typedef typename iterator_traits<Iterator>::value_type			value_type;
 	typedef typename iterator_traits<Iterator>::difference_type		difference_type;
@@ -97,9 +97,9 @@ class reverse_iterator
 		_it += n;
 		return (*this);
 	};
-
-	friend
-	reverse_iterator	operator+(difference_type n, const reverse_iterator &rit)	{
+	
+friend
+reverse_iterator	operator+(difference_type n, const reverse_iterator& rit)	{
 		return rit + n;
 	}
 

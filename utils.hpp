@@ -2,6 +2,7 @@
 # define UTILS_HPP
 
 # include "iterator_traits.hpp"
+# include "is_integral.hpp"
 
 namespace ft
 {
@@ -16,17 +17,20 @@ template <bool flag, class IsTrue, class IsFalse>
 struct choose;
 
 template <class IsTrue, class IsFalse>
-struct choose<true, IsTrue, IsFalse> {
+struct choose<true, IsTrue, IsFalse>
+{
    typedef IsTrue type;
 };
 
 template <class IsTrue, class IsFalse>
-struct choose<false, IsTrue, IsFalse> {
+struct choose<false, IsTrue, IsFalse>
+{
    typedef IsFalse type;
 };
 
 template <typename T>
-void	swap(T& a, T& b)	{
+void	swap(T& a, T& b)
+{
 	T tmp;
 
 	tmp = a;

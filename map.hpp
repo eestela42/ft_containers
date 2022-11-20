@@ -245,7 +245,7 @@ mapped_type& operator[] (const key_type& k)	{
 	}
 	
 	template <class InputIterator>
-	void insert (typename ft::enable_if<!std::numeric_limits<InputIterator>::is_integer, InputIterator>::type first, InputIterator last)	{
+	void insert (typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last)	{
 		for (; first != last; first++)
 			insert(*first);
 	}
@@ -269,11 +269,6 @@ mapped_type& operator[] (const key_type& k)	{
 	allocator_type	get_allocator() const	{
 		return this->_allocator;
 	}
-
-
-
-
-
 
 	iterator find (const key_type& k)	{
 		node_type	*node = get_node(k);
@@ -351,31 +346,13 @@ mapped_type& operator[] (const key_type& k)	{
 			return false;
 		return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
-
-	friend
-	bool operator!= (const map& lhs, const map& rhs)	{
-		return !(lhs == rhs);
-	}
 	
 	friend
 	bool operator<  (const map& lhs, const map& rhs)	{
 		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
-	friend
-	bool operator<= (const map& lhs, const map& rhs)	{
-		return !(rhs < lhs);
-	}
-
-	friend
-	bool operator>  (const map& lhs, const map& rhs)	{
-		return rhs < lhs;
-	}
-
-	friend
-	bool operator>= (const map& lhs, const map& rhs)	{
-		return !(lhs < rhs);
-	}
+	
 
 
 	private:
@@ -425,6 +402,25 @@ void swap (map<Key, T>& x, map<Key, T> &y)	{
 	x.swap(y);
 }
 
+	template <class Key, class T>
+	bool operator<= (const map<Key, T>& lhs, const map<Key, T>& rhs)	{
+		return !(rhs < lhs);
+	}
+
+	template <class Key, class T>
+	bool operator>  (const map<Key, T>& lhs, const map<Key, T>& rhs)	{
+		return rhs < lhs;
+	}
+
+	template <class Key, class T>
+	bool operator>= (const map<Key, T>& lhs, const map<Key, T>& rhs)	{
+		return !(lhs < rhs);
+	}
+
+	template <class Key, class T>
+	bool operator!= (const map<Key, T>& lhs, const map<Key, T>& rhs)	{
+		return !(lhs == rhs);
+	}
 
 }
 

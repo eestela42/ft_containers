@@ -55,31 +55,41 @@ class stack
 	{	container.pop_back();	};
 
 	friend
-	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
 		return lhs.container == rhs.container;
-	}
+	};
+	
 	friend
-	bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
+	bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
 		return lhs.container != rhs.container;
-	}
-	friend
-	bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
-		return lhs.container < rhs.container;
-	}
-	friend
-	bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
-		return lhs.container <= rhs.container;
-	}
-	friend
-	bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
-		return lhs.container > rhs.container;
-	}
-	friend
-	bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)	{
-		return lhs.container >= rhs.container;
-	}
+	};
 
-//emplace and swapp c++11 a test
+	friend
+	bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
+		return lhs.container < rhs.container;
+	};
+
+	friend
+	bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
+		return lhs.container <= rhs.container;
+	};
+
+	friend
+	bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
+		return lhs.container > rhs.container;
+	};
+
+	friend
+	bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+	{
+		return lhs.container >= rhs.container;
+	};
+
 
 
 };

@@ -1,13 +1,13 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-#include <iostream>
-#include <memory>
-#include "utils.hpp"
-#include "random_access_iterator.hpp"
-#include "reverse_iterator.hpp"
-#include "enable_if.hpp"
-#include <limits>
+# include <iostream>
+# include <memory>
+# include "utils.hpp"
+# include "random_access_iterator.hpp"
+# include "reverse_iterator.hpp"
+# include "enable_if.hpp"
+# include <limits>
 
 
 namespace ft
@@ -19,6 +19,7 @@ class vector
 
 public:		/* Member types */
 
+	typedef				size_t									size_type;
 	typedef				T										value_type;
 	typedef				A										allocator_type;
 	typedef	typename	allocator_type::reference				reference;
@@ -33,24 +34,19 @@ public:		/* Member types */
 
 	typedef typename iterator_traits<iterator>::difference_type	difference_type;
 
-	/*
-	ITERATORS
-	*/
-
-	typedef long int	size_type;
 
 private:
-	size_type	_container_size;
-	size_type	_container_capacity;
-	pointer		_start;
+	size_type		_container_size;
+	size_type		_container_capacity;
+	pointer			_start;
 	allocator_type	_allocator;
 
-	void	delete_from(int first)
+	void	delete_from(size_type first)
 	{
 		for (size_type i = first; i < this->_container_size; i++)
 			this->_allocator.destroy(&_start[i]);
 		this->_container_size = first;
-	}
+	};
 
 
 
@@ -70,7 +66,7 @@ public:		/* Member functions */
 		_container_size = 0;
 		_container_capacity = n;
 		assign(n, val);
-	}
+	};
 
 	template <class InputIterator>
 		vector (InputIterator first, InputIterator last,
@@ -81,7 +77,7 @@ public:		/* Member functions */
 		this->_container_size = 0;
 		this->_start = NULL;
 		assign(first, last);
-	}
+	};
 
 
 
@@ -90,7 +86,7 @@ public:		/* Member functions */
 		for (size_type i = 0; i < this->_container_size; i++)
 			this->_allocator.destroy(&_start[i]);
 		_allocator.deallocate(this->_start, _container_capacity);
-	}
+	};
 
 
 	vector& operator=( const vector& other )
@@ -116,10 +112,10 @@ public:		/* Member functions */
 		for (size_type i = 0; i < count; i++)
 			this->_allocator.construct(&this->_start[i], value);
 		this->_container_size = count;
-	}
+	};
 	
 	template< class InputIt >
-	void assign(typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer , InputIt>::type first, InputIt last )
+	void assign(typename ft::enable_if<!is_integral<InputIt>::value , InputIt>::type first, InputIt last )
 	{
 		delete_from(0);
 		reserve(ft::distance(first, last));
@@ -220,15 +216,17 @@ public:		/* Member functions */
 		if (new_cap <= this->_container_capacity)
 			return ;
 		if (new_cap > max_size())
-			throw std::length_error("allocator<T>::allocate(size_t n) 'n' exceeds maximum supported size");
+			throw std::length_error("vector::reserve");
 		if (!this->_start)
 		{
 			this->_start = this->_allocator.allocate(new_cap);
 			_container_capacity = new_cap;
 			return ;
 		}
-		size_type new_containers_cap = this->_container_capacity + 1;
-		while (new_containers_cap < new_cap + 1)
+
+		//size_type new_containers_cap = this->_container_capacity;
+		size_type new_containers_cap = 1;
+		while (new_containers_cap < new_cap)
 			new_containers_cap *= 2;
 
 		value_type* new_tab = this->_allocator.allocate(new_containers_cap);
@@ -265,7 +263,7 @@ public:		/* Member functions */
 		_allocator.construct(&(*it), value);
 		_container_size++;
 		return position;
-	}
+	};
 
 	void insert( iterator pos, size_type count, const T& value )
 	{
@@ -284,10 +282,10 @@ public:		/* Member functions */
 			pos++;
 		}
 		_container_size += count;
-	}
+	};
 
 	template< class InputIt >
-	void insert( iterator pos, InputIt first, InputIt last, typename ft::enable_if<!std::numeric_limits<InputIt>::is_integer, InputIt>::type* = NULL )
+	void insert( iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL )
 	{
 		typename iterator_traits<InputIt>::difference_type n = ft::distance(first, last);
 		difference_type i = distance(begin(), pos);
@@ -342,8 +340,8 @@ public:		/* Member functions */
 
 	void pop_back()
 	{
-		this->_allocator.destroy(&this->_start[this->_container_size - 1]);
 		this->_container_size--;
+		this->_allocator.destroy(&this->_start[this->_container_size]);
 	};
 
 	void resize( size_type count, T value = T() )
@@ -357,7 +355,7 @@ public:		/* Member functions */
 		for(size_type i = this->_container_size; i < count; i++)
 			this->_allocator.construct(&this->_start[i], value);
 		this->_container_size = count;
-	}
+	};
 
 	void swap( vector& other )
 	{
@@ -365,25 +363,24 @@ public:		/* Member functions */
 		ft::swap(this->_container_capacity, other._container_capacity);
 		ft::swap(this->_container_size, other._container_size);
 		ft::swap(this->_allocator, other._allocator);
-	}
+	};
 
 	friend
-	bool operator== (const vector& lhs, const vector& rhs)	{
+	bool operator== (const vector& lhs, const vector& rhs)
+	{
 		if (lhs._container_size != rhs._container_size)
 			return false;
 		for (size_type i = 0; i < rhs._container_size; i++)
 			if (lhs._start[i] != rhs._start[i])
 				return false;
 		return true;
-	}
+	};
 
-	friend
-	bool operator!= (const vector& lhs, const vector& rhs)	{
-		return !(lhs == rhs);
-	}
+	
 	
 	friend
-	bool operator<  (const vector& lhs, const vector& rhs)	{
+	bool operator<  (const vector& lhs, const vector& rhs)
+	{
 		for (size_type i = 0; i < rhs._container_size; i++)
 		{
 			if (i == lhs._container_size)
@@ -392,29 +389,38 @@ public:		/* Member functions */
 				return lhs._start[i] < rhs._start[i];
 		}
 		return false;
-	}
+	};
 
-	friend
-	bool operator<= (const vector& lhs, const vector& rhs)	{
-		return !(rhs < lhs);
-	}
-
-	friend
-	bool operator>  (const vector& lhs, const vector& rhs)	{
-		return rhs < lhs;
-	}
-
-	friend
-	bool operator>= (const vector& lhs, const vector& rhs)	{
-		return !(lhs < rhs);
-	}
-	
 };
 	template<class T>
-	void swap (vector<T>& x, vector<T>& y)	{
+	void swap (vector<T>& x, vector<T>& y)
+	{
 	x.swap(y);
-	}
+	};
 
+	template<class T>
+	bool operator!= (const vector<T>& lhs, const vector<T>& rhs)
+	{
+		return !(lhs == rhs);
+	};
+
+	template<class T>
+	bool operator<= (const vector<T>& lhs, const vector<T>& rhs)
+	{
+		return !(rhs < lhs);
+	};
+
+	template<class T>
+	bool operator>  (const vector<T>& lhs, const vector<T>& rhs)
+	{
+		return rhs < lhs;
+	};
+
+	template<class T>
+	bool operator>= (const vector<T>& lhs, const vector<T>& rhs)
+	{
+		return !(lhs < rhs);
+	};
 
 
 }

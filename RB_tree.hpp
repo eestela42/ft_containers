@@ -126,51 +126,20 @@ struct RB_tree
 
 	void	leftRotate(node_type *x)
 	{
-		/*
-			node_type	*y = x->rightChild;
-			x->rightChild = y->leftChild;
-			if (y->leftChild != leaf)
-				y->leftChild->parent = x;
-			y->parent = x->parent;
-			if (x->parent == NULL)
-				this->root = y;
-			else if (x == x->parent->leftChild)
-				x->parent->leftChild = y;
-			else
-				x->parent->rightChild = y;
-			y->leftChild = x;
-			x->parent = y;
-			*/
+
 		node_type* y = x->rightChild;
-		//le fils rightChild de x devient le fils leftChild de y
 		x->rightChild = y->leftChild;
 		if (y->leftChild != leaf)
 			y->leftChild->parent = x;
 
 		transplant(x, y);
 
-		//On attache x à leftChild de y
 		y->leftChild = x;
 		x->parent = y;
 	};
 
 	void	rightRotate(node_type *x)
 	{
-		/*
-		node_type	*y = x->leftChild;
-		x->leftChild = y->rightChild;
-		if (y->rightChild != leaf)
-			y->rightChild->parent = x;
-		y ->parent = x->parent;
-		if (x->parent == NULL)
-			this->root = y;
-		else if (x == x->parent->rightChild)
-			x->parent->rightChild = y;
-		else
-			x->parent->leftChild = y;
-		y->rightChild = x;
-		x->parent = y;
-		*/
 		node_type* y = x->leftChild;
 
 		x->leftChild = y->rightChild;
@@ -187,63 +156,10 @@ struct RB_tree
 
 
 	void	insertFix(node_type *x)
-	{
-		/*
-		node_type *u;
-		while (k->parent->color == RED)
-		{
-			if (k->parent == k->parent->parent->rightChild)
-			{
-				u = k->parent->parent->leftChild;
-				if (u->color == RED)
-				{
-					u->color = BLACK;
-					k->parent->color = BLACK;
-					k->parent->parent->color = RED;
-					k = k->parent->parent;
-				}
-				else{
-					if (k == k->parent->leftChild)
-					{
-						k = k->parent;
-						rightRotate(k);
-					}
-					k->parent->color = BLACK;
-					k->parent->parent->color = RED;
-					leftRotate(k->parent->parent);
-				}
-			}
-			else
-			{
-				u = k->parent->parent->rightChild;
-				if (u->color == RED)
-				{
-					u->color = BLACK;
-					k->parent->color = BLACK;
-					k->parent->parent->color = RED;
-					k = k->parent->parent;
-				}
-				else
-				{
-					if (k == k->parent->rightChild)
-					{
-						k = k->parent;
-						leftRotate(k);
-					}
-					k->parent->color = BLACK;
-					k->parent->parent->color = RED;
-					rightRotate(k->parent->parent);
-				}
-				if (k == this->root)
-					break ;
-			}
-		}
-		this->root->color = BLACK;
-		*/
-		
-		if (x->parent == NULL) // n est a la racine
+	{	
+		if (x->parent == NULL)
 			x->color = BLACK;
-		else if (x->parent->color == BLACK) // on laisse n rouge et c'est bon
+		else if (x->parent->color == BLACK) 
 			return ;
 		else if (x->uncle() != leaf && x->uncle()->color == RED)	{
 			x->parent->color = BLACK;
@@ -280,78 +196,8 @@ struct RB_tree
 
 	void	deleteFix(node_type *x)
 	{
-		/*
-		node_type	*s;
-		while (x != this->root && x->color == BLACK)
-		{
-			if (x == x->parent->leftChild)
-			{
-				s = x->parent->rightChild;
-				if (s->color == RED)
-				{
-					s->color = BLACK;
-					x->parent->color = RED;
-					leftRotate(x->parent);
-					s = x->parent->rightChild;
-				}
-				if (s->leftChild->color == BLACK && s->rightChild->color == BLACK)
-				{
-					s->color = RED;
-					x = x->parent;
-				}
-				else
-				{
-					if (s->rightChild->color == BLACK)
-					{
-						s->leftChild->color = BLACK;
-						s->color = RED;
-						rightRotate(s);
-						s = x->parent->rightChild;
-					}
-					s->color = x->parent->color;
-					x->parent->color = BLACK;
-					s->rightChild->color = BLACK;
-					leftRotate(x->parent);
-					x = this->root;
-				}
-			}
-			else
-			{
-				s = x->parent->leftChild;
-				if (s->color == RED)
-				{
-					s->color = BLACK;
-					x->parent->color = RED;
-					rightRotate(x->parent);
-					s = x->parent->leftChild;
-				}
-				if (s->rightChild->color == BLACK && s->rightChild->color == BLACK)
-				{
-					s->color = RED;
-					x = x->parent;
-				}
-				else
-				{
-					if (s->leftChild->color == BLACK)
-					{
-						s->rightChild->color = BLACK;
-						s->color = RED;;
-						leftRotate(s);
-						s = x->parent->leftChild;
-					}
-					s->color = x->parent->color;
-					x->parent->color = BLACK;
-					s->leftChild->color = BLACK;
-					rightRotate(x->parent);
-					x = this->root;
-				}
-			}
-		}
-		x->color = BLACK;
-		*/
 		node_type *s;
 		while (x != root && x->color == BLACK) {
-			// std::cerr << 
 			if (x == x->parent->leftChild) {
 				s = x->parent->rightChild;
 				if (s->color == RED) {

@@ -2,7 +2,7 @@
 # define ITERATOR_TRAITS_HPP
 
 # include <stddef.h>
-#include <iterator>
+# include <iterator>
 
 namespace ft
 {
